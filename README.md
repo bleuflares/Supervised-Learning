@@ -1,2 +1,2 @@
 # Machine-Learning
-basic machine learning algorithms
+basic supervised learning algorithms
