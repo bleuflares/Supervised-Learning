@@ -11,14 +11,10 @@ from sklearn import svm
 
 fold = 10
 
-def cosine_dist(arr1, arr2):
-    dot = np.sum(np.dot(np.array(arr1), np.array(arr2)))
-    length1 = np.sum(np.dot(np.array(arr1), np.array(arr2)))
-    length2 = np.sum(np.dot(np.array(arr1), np.array(arr2)))
-    if length1 == 0 or length2 == 0:
-        return 99999999
-    else:
-        return 1 - dot / (math.sqrt(length1) * math.sqrt(length2))
+def euc_dist(arr1, arr2):
+    diff = np.array(arr1) - np.array(arr2)
+    return np.sum(np.dot(diff, diff))
+    
 
 def get_input():
     file = open("dataset/Admission_Predict_Ver1.1.csv", 'r')
@@ -58,8 +54,8 @@ def kNN(x, y, k_max):
     batch_size = len(x) / fold
     for k_iter in range(k_max):
         accuracy = []
-        counts = 0
         for l in range(fold):
+            counts = 0
             tx = []
             ty = []
             vx = []
@@ -75,7 +71,7 @@ def kNN(x, y, k_max):
                 distance = []
                 neighbors = {}
                 for i in range(len(tx)):
-                    distance.append((cosine_dist(tx[i], vx[j]), i))
+                    distance.append((euc_dist(tx[i], vx[j]), i))
                 distance.sort(key=lambda x : x[0])
                 for k in range(k_iter + 1):
                     if ty[distance[k][1]] in neighbors:
@@ -85,14 +81,17 @@ def kNN(x, y, k_max):
                 if(vy[j] == max(neighbors.iteritems(), key=operator.itemgetter(1))[0]):
                     counts += 1
             accuracy.append(counts / float(len(vx)))
+        print(accuracy)
         result = str(k_iter + 1) + "," + str(sum(accuracy) / float(len(accuracy))) + "\n"
         print(result)
         file.write(result)
 
 if __name__ == "__main__":
     array = get_input()
-    x = array[:, :8].tolist()
+    x = array[:, :8]
+    x = (x / x.max(axis=0)).tolist()
     y = array[:, 8].tolist()
+    y = discrete_convert(y)
     tx = array[:450, :8].tolist()
     ty = array[:450, 8].tolist()
     ty = discrete_convert(ty)
