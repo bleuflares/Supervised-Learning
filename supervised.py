@@ -9,6 +9,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn import svm
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 
 fold = 10
@@ -56,68 +57,81 @@ def decisionTree(tx, ty, vx, vy, height, data):
         file.write(str(classifier.score(tx, ty)) + ", ")
         file.write(str(classifier.score(vx, vy)) + "\n")
 
-def AdaBoosting(tx, ty, vx, vy, n, height, data):
-    print("boosting")
-    file = open(data + "ada_boosting_estimator_num.csv", "w")
-    file.write("max_depth" + ", "  + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
-    for estimator_num in range(n):
-        classifier = AdaBoostClassifier(base_estimator=tree.DecisionTreeClassifier(max_depth=height), n_estimators=(estimator_num + 1))
-        result = ""
-        result += (str(estimator_num + 1) + "," + str(estimator_num + 1) + "," + str(cross_val_score(classifier, tx, ty, cv = fold).mean()) + ", ")
-        classifier.fit(tx, ty)
-        result += str(classifier.score(tx, ty)) + ", "
-        result += str(classifier.score(vx, vy)) + "\n"
-        file.write(result)
-
+def AdaBoosting_depth(tx, ty, vx, vy, n, height, data):
+    print("boosting with depth")
     file = open(data + "ada_boosting_max_depth.csv", "w")
     file.write("max_depth" + ", " + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
     for max_depth in range(height):
         classifier = AdaBoostClassifier(base_estimator=tree.DecisionTreeClassifier(max_depth=max_depth + 1), n_estimators=100)
         result = ""
-        result += (str(max_depth + 1) + "," + str(estimator_num + 1) + "," + str(cross_val_score(classifier, tx, ty, cv = fold).mean()) + ", ")
+        result += (str(max_depth + 1) + "," + str(cross_val_score(classifier, tx, ty, cv = fold).mean()) + ", ")
         classifier.fit(tx, ty)
         result += str(classifier.score(tx, ty)) + ", "
         result += str(classifier.score(vx, vy)) + "\n"
         file.write(result)
+        print("write")
 
-def GradientBoosting(tx, ty, vx, vy, n, height, data):
-    file = open(data + "gradient_boosting_estimator_num.csv", "w")
+def AdaBoosting(tx, ty, vx, vy, n, height, data):
+    print("boosting with estimator")
+    file = open(data + "ada_boosting_estimator_num.csv", "w")
     file.write("max_depth" + ", "  + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
     for estimator_num in range(n):
-        classifier = GradientBoostingClassifier(base_estimator=tree.DecisionTreeClassifier(max_depth=height), n_estimators=(estimator_num + 1))
+        classifier = AdaBoostClassifier(base_estimator=tree.DecisionTreeClassifier(max_depth=height), n_estimators=(estimator_num + 1))
         result = ""
-        result += (str(estimator_num + 1) + "," + str(estimator_num + 1) + "," + str(cross_val_score(classifier, tx, ty, cv = fold).mean()) + ", ")
+        result += (str(estimator_num + 1) + "," + str(cross_val_score(classifier, tx, ty, cv = fold).mean()) + ", ")
         classifier.fit(tx, ty)
         result += str(classifier.score(tx, ty)) + ", "
         result += str(classifier.score(vx, vy)) + "\n"
         file.write(result)
 
-    file = open(data + "gradient_boosting_max_depth.csv", "w")
+    print("boosting with depth")
+    file = open(data + "ada_boosting_max_depth.csv", "w")
     file.write("max_depth" + ", " + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
     for max_depth in range(height):
-        classifier = GradientBoostingClassifier(base_estimator=tree.DecisionTreeClassifier(max_depth=max_depth + 1), n_estimators=100)
+        classifier = AdaBoostClassifier(base_estimator=tree.DecisionTreeClassifier(max_depth=max_depth + 1), n_estimators=100)
         result = ""
-        result += (str(max_depth + 1) + "," + str(estimator_num + 1) + "," + str(cross_val_score(classifier, tx, ty, cv = fold).mean()) + ", ")
+        result += (str(max_depth + 1) + "," + str(cross_val_score(classifier, tx, ty, cv = fold).mean()) + ", ")
         classifier.fit(tx, ty)
         result += str(classifier.score(tx, ty)) + ", "
         result += str(classifier.score(vx, vy)) + "\n"
         file.write(result)
+        print("write")
 
-def NeuralNet(tx, ty, vx, vy, neurons_num, max_depth, data):
-    print("NeuralNet")
+def NeuralNet_depth(tx, ty, vx, vy, neurons_num, max_depth, data):
+    print("NeuralNet depth")
     scaler = StandardScaler()
     scaler.fit(tx)
     tx = scaler.transform(tx)
     vx = scaler.transform(vx)
-    file = open("neural_network.csv", "w")
+    file = open(data + "neural_network_depth.csv", "w")
     file.write("layers" + ", " + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
     layers = []
     for depth in range(max_depth):
         for neuron in range(depth):
             layers.append(neurons_num)
-        classifier = MLPClassifier(solver='adam', alpha=1e-5, hidden_layer_sizes=(layers), random_state=1)
+        classifier = MLPClassifier(solver='adam', alpha=1e-5, max_iter=10000, hidden_layer_sizes=(layers), random_state=1)
         result = ""
         result += (str(depth + 1) + "," + str(cross_val_score(classifier, tx, ty, cv = fold).mean()) + ", ")
+        classifier.fit(tx, ty)
+        result += str(classifier.score(tx, ty)) + ", "
+        result += str(classifier.score(vx, vy)) + "\n"
+        file.write(result)
+
+def NeuralNet_neuron_num(tx, ty, vx, vy, neurons_num, max_depth, data):
+    print(data + "NeuralNet neuron num")
+    scaler = StandardScaler()
+    scaler.fit(tx)
+    tx = scaler.transform(tx)
+    vx = scaler.transform(vx)
+    file = open(data + "neural_network_neuron_num.csv", "w")
+    file.write("neurons_per_layer" + ", " + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
+    layers = []
+    for neuron in range(neurons_num):
+        for depth in range(max_depth):
+            layers.append(neuron + 1)
+        classifier = MLPClassifier(solver='adam', alpha=1e-5, max_iter=10000, hidden_layer_sizes=(layers), random_state=1)
+        result = ""
+        result += (str(neuron + 1) + "," + str(cross_val_score(classifier, tx, ty, cv = fold).mean()) + ", ")
         classifier.fit(tx, ty)
         result += str(classifier.score(tx, ty)) + ", "
         result += str(classifier.score(vx, vy)) + "\n"
@@ -193,6 +207,20 @@ def kNN(tx, ty, vx, vy, k_max, data):
         result = str(k_iter + 1) + "," + str(counts / float(len(vx))) + "\n"
         file.write(result)
 
+def kNN_fast(tx, ty, vx, vy, k_max, data):
+    print("kNN")
+    file = open(data + "knn.csv", "w")
+    file.write("k" + ", " + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
+    for k in range(k_max):
+        classifier = KNeighborsClassifier(n_neighbors = k + 1)
+        result = ""
+        result += (str(k + 1) + "," + str(cross_val_score(
+        classifier, tx, ty, cv = fold).mean()) + ", ")
+        classifier.fit(tx, ty)
+        result += str(classifier.score(tx, ty)) + ", "
+        result += str(classifier.score(vx, vy)) + "\n"
+        file.write(result)
+
 def SVM(data):
     print("SVM")
     file = open(data + "svm.csv", "w")
@@ -225,33 +253,33 @@ def SVM(data):
     file.write(result)
 
 if __name__ == "__main__":
-    print("small input")
-    array = get_admission_input()
-    x = array[:, :8]
-    x = (x / x.max(axis=0)).tolist()
-    y = array[:, 8].tolist()
-    y = discrete_convert(y)
-    tx = x[:450]
-    ty = y[:450]
-    vx = x[450:]
-    vy = y[450:]
+    #print("small input")
+    #array = get_admission_input()
+    #x = array[:, :8]
+    #x = (x / x.max(axis=0)).tolist()
+    #y = array[:, 8].tolist()
+    #y = discrete_convert(y)
+    #tx = x[:450]
+    #ty = y[:450]
+    #vx = x[450:]
+    #vy = y[450:]
     #decisionTree(tx, ty, vx, vy, 25, "admission")
-    AdaBoosting(tx, ty, vx, vy, 10, 25, "admission")
-    GradientBoosting(tx, ty, vx, vy, 10, 25, "admission")
+    #AdaBoosting(tx, ty, vx, vy, 10, 25, "admission")
     #kNN(tx, ty, vx, vy, 25, "admission")
     #SVM("admission")
-    #NeuralNet(tx, ty, vx, vy, 10, 10, "admission")
+    #NeuralNet_neuron_num(tx, ty, vx, vy, 10, 5, "admission")
     
     print("big input")
     array = get_accident_input()
-    tx = array[:20000, :13].tolist()
-    ty = array[:20000, 13].tolist()
-    vx = array[20000:, :13].tolist()
-    vy = array[20000:, 13].tolist()
-    decisionTree(tx, ty, vx, vy, 100, "accident")
-    AdaBoosting(tx, ty, vx, vy, 10, 100, "accident")
-    GradientBoosting(tx, ty, vx, vy, 10, 100, "accident")
-    kNN(tx, ty, vx, vy, 100, "accident")
-    SVM("accident")
-    NeuralNet(tx, ty, vx, vy, 100, 100, "accident")
+    tx = array[:len(array) * 9 / 10, :13].tolist()
+    ty = array[:len(array) * 9 / 10, 13].tolist()
+    vx = array[len(array) * 9 / 10:, :13].tolist()
+    vy = array[len(array) * 9 / 10:, 13].tolist()
+    #decisionTree(tx, ty, vx, vy, 100, "accident2")
+    #kNN_fast(tx, ty, vx, vy, 100, "accident2")
+    #SVM("accident2")
+    AdaBoosting_depth(tx, ty, vx, vy, 80, 100, "accident")
+    #NeuralNet_neuron_depth(tx, ty, vx, vy, 50, 50, "accident2")
+    #NeuralNet_neuron_num(tx, ty, vx, vy, 50, 50, "accident2")
+    
     
