@@ -23,13 +23,13 @@ def cos_dist(arr1, arr2):
     return np.sum(np.dot(np.array(arr1), np.array(arr2))) / (length1 * length2)
     
 
-def get_input():
+def get_admission_input():
     file = open("dataset/Admission_Predict_Ver1.1.csv", 'r')
     return np.loadtxt(file, delimiter=",", skiprows=1)
 
-def get_input2():
+def get_accident_input():
     file = open("dataset/Accident.csv", 'r')
-    return np.loadtxt(file, delimiter=" ", skiprows=1)
+    return np.loadtxt(file, delimiter=",", skiprows=1)
 
 def discrete_convert(l):
     n = []
@@ -44,9 +44,9 @@ def discrete_convert(l):
             n.append(4)
     return n
 
-def decisionTree(tx, ty, vx, vy, height):
+def decisionTree(tx, ty, vx, vy, height, data):
     print("DT")
-    file = open("decisiontree.csv", "w")
+    file = open(data + "decisiontree.csv", "w")
     file.write("max_depth" + ", " + "cross_val_score" + ", " + "train_score" + ", " + "test_score\n")
     for max_depth in range(height):
         classifier = tree.DecisionTreeClassifier(max_depth = max_depth + 1)
@@ -56,29 +56,28 @@ def decisionTree(tx, ty, vx, vy, height):
         file.write(str(classifier.score(tx, ty)) + ", ")
         file.write(str(classifier.score(vx, vy)) + "\n")
 
-def boosting(tx, ty, vx, vy, n, height):
+def boosting(tx, ty, vx, vy, n, height, data):
     print("boosting")
-    file = open("boosting.csv", "w")
+    file = open(data + "boosting.csv", "w")
     file.write("max_depth" + ", " + "n_estimators" + ", " + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
     for n_estimators in range(n):
         for max_depth in range(height):
-            classifier = AdaBoostClassifier(base_estimator=tree.DecisionTreeClassifier(max_depth=max_depth + 1), n_estimators=10* (n_estimators + 1))
+            classifier = AdaBoostClassifier(base_estimator=tree.DecisionTreeClassifier(max_depth=max_depth + 1), n_estimators=10 * (n_estimators + 1))
             result = ""
             result += (str(max_depth + 1) + "," + str(n_estimators + 1) + "," + str(cross_val_score(
             classifier, tx, ty, cv = fold).mean()) + ", ")
             classifier.fit(tx, ty)
             result += str(classifier.score(tx, ty)) + ", "
             result += str(classifier.score(vx, vy)) + "\n"
-            print(result)
             file.write(result)
 
-def NeuralNet(tx, ty, vx, vy, neurons_num, max_depth):
+def NeuralNet(tx, ty, vx, vy, neurons_num, max_depth, data):
+    print("NeuralNet")
     scaler = StandardScaler()
     scaler.fit(tx)
     tx = scaler.transform(tx)
     vx = scaler.transform(vx)
-    file = open("aviation_accidents_neural_network_layer_results.csv", "w")
-    print("Beginning model complexity analysis for NeuralNetwork... neurons")
+    file = open("neural_network.csv", "w")
     file.write("layers" + ", " + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
     layers = []
     for depth in range(max_depth):
@@ -90,13 +89,11 @@ def NeuralNet(tx, ty, vx, vy, neurons_num, max_depth):
         classifier.fit(tx, ty)
         result += str(classifier.score(tx, ty)) + ", "
         result += str(classifier.score(vx, vy)) + "\n"
-        print(result)
         file.write(result)
 
-def kNN(tx, ty, vx, vy, k_max):
+def kNN(tx, ty, vx, vy, k_max, data):
     print("kNN")
-    file = open("knn.csv", "w")
-    print("Beginning model complexity analysis for KNN...")
+    file = open(data + "knn.csv", "w")
     file.write("k" + ", " + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
     batch_size = len(tx) / fold
     for k_iter in range(k_max):
@@ -164,9 +161,9 @@ def kNN(tx, ty, vx, vy, k_max):
         result = str(k_iter + 1) + "," + str(counts / float(len(vx))) + "\n"
         file.write(result)
 
-def SVM():
+def SVM(data):
     print("SVM")
-    file = open("svm.csv", "w")
+    file = open(data + "svm.csv", "w")
     LinearSVC = svm.LinearSVC();
     RBFSVC = svm.SVC(kernel="rbf")
     SigmoidSVC = svm.SVC(kernel="sigmoid")
@@ -177,7 +174,6 @@ def SVM():
     LinearSVC.fit(tx, ty)
     result += str(LinearSVC.score(tx, ty)) + ", "
     result += str(LinearSVC.score(vx, vy)) + "\n"
-    print(result)
     file.write(result)
 
     result = ""
@@ -186,7 +182,6 @@ def SVM():
     RBFSVC.fit(tx, ty)
     result += str(RBFSVC.score(tx, ty)) + ", "
     result += str(RBFSVC.score(vx, vy)) + "\n"
-    print(result)
     file.write(result)
 
     result = ""
@@ -195,12 +190,11 @@ def SVM():
     SigmoidSVC.fit(tx, ty)
     result += str(SigmoidSVC.score(tx, ty)) + ", "
     result += str(SigmoidSVC.score(vx, vy)) + "\n"
-    print(result)
     file.write(result)
 
 if __name__ == "__main__":
-    """
-    array = get_input()
+    print("small input")
+    array = get_admission_input()
     x = array[:, :8]
     x = (x / x.max(axis=0)).tolist()
     y = array[:, 8].tolist()
@@ -209,24 +203,21 @@ if __name__ == "__main__":
     ty = y[:450]
     vx = x[450:]
     vy = y[450:]
-    #decisionTree(tx, ty, vx, vy, 10)
-    #boosting(tx, ty, vx, vy, 10, 10)
-    #kNN(tx, ty, vx, vy, 25)
-    SVM()
-    NeuralNet(tx, ty, vx, vy, 10, 10)
-    """
-    array = get_input2()
-    #x = array[:, :12].tolist()
-    #y = array[:, 12].tolist()
-    tx = array[:1000000, 13].tolist()
-    ty = array[:1000000, :12].tolist()
-    vx = array[1000000:, 13].tolist()
-    vy = array[1000000:, :12].tolist()
-    print(len(tx))
-    print(len(ty))
-    print(len(vx))
-    print(len(vy))
-    decisionTree(tx, ty, vx, vy, 100)
-    boosting(tx, ty, vx, vy, 10, 10)
-    #kNN(x, y, 25)
-    """
+    decisionTree(tx, ty, vx, vy, 25, "admission")
+    boosting(tx, ty, vx, vy, 10, 25, "admission")
+    kNN(tx, ty, vx, vy, 25, "admission")
+    SVM("admission")
+    NeuralNet(tx, ty, vx, vy, 10, 10, "admission")
+    
+    print("big input")
+    array = get_accident_input()
+    tx = array[:20000, :13].tolist()
+    ty = array[:20000, 13].tolist()
+    vx = array[20000:, :13].tolist()
+    vy = array[20000:, 13].tolist()
+    decisionTree(tx, ty, vx, vy, 100, "accident")
+    boosting(tx, ty, vx, vy, 10, 100, "accident")
+    kNN(tx, ty, vx, vy, 100, "accident")
+    SVM("accident")
+    NeuralNet(tx, ty, vx, vy, 100, 100, "accident")
+    
