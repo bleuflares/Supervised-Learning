@@ -29,7 +29,7 @@ def get_admission_input():
     return np.loadtxt(file, delimiter=",", skiprows=1)
 
 def get_accident_input():
-    file = open("dataset/Accident.csv", 'r')
+    file = open("dataset/Accident2.csv", 'r')
     return np.loadtxt(file, delimiter=",", skiprows=1)
 
 def discrete_convert(l):
@@ -117,7 +117,7 @@ def NeuralNet_depth(tx, ty, vx, vy, neurons_num, max_depth, data):
         result += str(classifier.score(vx, vy)) + "\n"
         file.write(result)
 
-def NeuralNet_neuron_num(tx, ty, vx, vy, neurons_num, max_depth, data):
+def NeuralNet_neuron_num(tx, ty, vx, vy, neurons_num, data):
     print(data + "NeuralNet neuron num")
     scaler = StandardScaler()
     scaler.fit(tx)
@@ -125,10 +125,9 @@ def NeuralNet_neuron_num(tx, ty, vx, vy, neurons_num, max_depth, data):
     vx = scaler.transform(vx)
     file = open(data + "neural_network_neuron_num.csv", "w")
     file.write("neurons_per_layer" + ", " + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
-    layers = []
     for neuron in range(neurons_num):
-        for depth in range(max_depth):
-            layers.append(neuron + 1)
+        layers = []
+        layers.append(neuron + 1)
         classifier = MLPClassifier(solver='adam', alpha=1e-5, max_iter=10000, hidden_layer_sizes=(layers), random_state=1)
         result = ""
         result += (str(neuron + 1) + "," + str(cross_val_score(classifier, tx, ty, cv = fold).mean()) + ", ")
@@ -278,8 +277,8 @@ if __name__ == "__main__":
     #decisionTree(tx, ty, vx, vy, 100, "accident2")
     #kNN_fast(tx, ty, vx, vy, 100, "accident2")
     #SVM("accident2")
-    AdaBoosting_depth(tx, ty, vx, vy, 80, 100, "accident")
-    #NeuralNet_neuron_depth(tx, ty, vx, vy, 50, 50, "accident2")
-    #NeuralNet_neuron_num(tx, ty, vx, vy, 50, 50, "accident2")
+    #AdaBoosting_depth(tx, ty, vx, vy, 80, 100, "accident")
+    #NeuralNet_depth(tx, ty, vx, vy, 50, 50, "accident2")
+    NeuralNet_neuron_num(tx, ty, vx, vy, 100, "accident2")
     
     
