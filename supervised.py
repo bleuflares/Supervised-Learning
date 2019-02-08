@@ -71,7 +71,7 @@ def AdaBoosting_depth(tx, ty, vx, vy, n, height, data):
         file.write(result)
         print("write")
 
-def AdaBoosting(tx, ty, vx, vy, n, height, data):
+def AdaBoosting_estimator(tx, ty, vx, vy, n, height, data):
     print("boosting with estimator")
     file = open(data + "ada_boosting_estimator_num.csv", "w")
     file.write("max_depth" + ", "  + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
@@ -83,19 +83,6 @@ def AdaBoosting(tx, ty, vx, vy, n, height, data):
         result += str(classifier.score(tx, ty)) + ", "
         result += str(classifier.score(vx, vy)) + "\n"
         file.write(result)
-
-    print("boosting with depth")
-    file = open(data + "ada_boosting_max_depth.csv", "w")
-    file.write("max_depth" + ", " + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
-    for max_depth in range(height):
-        classifier = AdaBoostClassifier(base_estimator=tree.DecisionTreeClassifier(max_depth=max_depth + 1), n_estimators=100)
-        result = ""
-        result += (str(max_depth + 1) + "," + str(cross_val_score(classifier, tx, ty, cv = fold).mean()) + ", ")
-        classifier.fit(tx, ty)
-        result += str(classifier.score(tx, ty)) + ", "
-        result += str(classifier.score(vx, vy)) + "\n"
-        file.write(result)
-        print("write")
 
 def NeuralNet_depth(tx, ty, vx, vy, neurons_num, max_depth, data):
     print("NeuralNet depth")
@@ -189,7 +176,6 @@ def kNN(tx, ty, vx, vy, k_max, data):
                 counts += 1
         result = str(k_iter + 1) + "," + str(counts / float(len(tx)))
         file.write(result)
-
         counts = 0
         for j in range(len(vx)):
             distance = []
@@ -253,33 +239,33 @@ def SVM(data):
     file.write(result)
 
 if __name__ == "__main__":
-    #print("small input")
-    #array = get_admission_input()
-    #x = array[:, :8]
-    #x = (x / x.max(axis=0)).tolist()
-    #y = array[:, 8].tolist()
-    #y = discrete_convert(y)
-    #tx = x[:450]
-    #ty = y[:450]
-    #vx = x[450:]
-    #vy = y[450:]
+    print("small input")
+    array = get_admission_input()
+    x = array[:, :8]
+    x = (x / x.max(axis=0)).tolist()
+    y = array[:, 8].tolist()
+    y = discrete_convert(y)
+    tx = x[:450]
+    ty = y[:450]
+    vx = x[450:]
+    vy = y[450:]
     #decisionTree(tx, ty, vx, vy, 25, "admission")
     #AdaBoosting(tx, ty, vx, vy, 10, 25, "admission")
     #kNN(tx, ty, vx, vy, 25, "admission")
     #SVM("admission")
-    #NeuralNet_neuron_num(tx, ty, vx, vy, 10, 5, "admission")
-    
+    NeuralNet_neuron_num(tx, ty, vx, vy, 10, 5, "admission")
+    """
     print("big input")
     array = get_accident_input()
     tx = array[:len(array) * 9 / 10, :13].tolist()
     ty = array[:len(array) * 9 / 10, 13].tolist()
     vx = array[len(array) * 9 / 10:, :13].tolist()
     vy = array[len(array) * 9 / 10:, 13].tolist()
-    #decisionTree(tx, ty, vx, vy, 100, "accident2")
-    #kNN_fast(tx, ty, vx, vy, 100, "accident2")
-    #SVM("accident2")
+    decisionTree(tx, ty, vx, vy, 100, "accident")
+    kNN(tx, ty, vx, vy, 100, "accident")
+    SVM("accident")
     AdaBoosting_depth(tx, ty, vx, vy, 80, 100, "accident")
-    #NeuralNet_neuron_depth(tx, ty, vx, vy, 50, 50, "accident2")
-    #NeuralNet_neuron_num(tx, ty, vx, vy, 50, 50, "accident2")
-    
+    NeuralNet_neuron_depth(tx, ty, vx, vy, 50, 50, "accident")
+    NeuralNet_neuron_num(tx, ty, vx, vy, 50, 50, "accident")
+    """
     
