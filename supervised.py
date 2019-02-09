@@ -252,10 +252,10 @@ if __name__ == "__main__":
     vy = y[450:]
     #decisionTree(tx, ty, vx, vy, 25, "non_normalized_admission")
     #AdaBoosting_depth(tx, ty, vx, vy, 10, 25, "non_normalized_admission")
-    #kNN_fast(tx, ty, vx, vy, 25, "non_normalized_admission")
+    kNN_fast(tx, ty, vx, vy, 50, "non_normalized_admission")
     #SVM("non_normalized_admission")
     #NeuralNet_depth(tx, ty, vx, vy, 10, 25, "non_normalized_admission")
-    
+    """
     print("big input")
     array = get_accident_input()
     x = array[:, :13]
@@ -268,3 +268,4 @@ if __name__ == "__main__":
     kNN_fast(tx, ty, vx, vy, 100, "normalized_accident")
     SVM("normalized_accident")
     AdaBoosting_depth(tx, ty, vx, vy, 80, 100, "normalized_accident")
+    """
