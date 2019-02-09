@@ -250,19 +250,19 @@ if __name__ == "__main__":
     ty = y[:450]
     vx = x[450:]
     vy = y[450:]
-    decisionTree(tx, ty, vx, vy, 25, "non_normalized_admission")
-    AdaBoosting_depth(tx, ty, vx, vy, 10, 25, "non_normalized_admission")
-    kNN_fast(tx, ty, vx, vy, 25, "non_normalized_admission")
-    SVM("non_normalized_admission")
-    NeuralNet_depth(tx, ty, vx, vy, 10, 25, "non_normalized_admission")
+    #decisionTree(tx, ty, vx, vy, 25, "non_normalized_admission")
+    #AdaBoosting_depth(tx, ty, vx, vy, 10, 25, "non_normalized_admission")
+    #kNN_fast(tx, ty, vx, vy, 25, "non_normalized_admission")
+    #SVM("non_normalized_admission")
+    #NeuralNet_depth(tx, ty, vx, vy, 10, 25, "non_normalized_admission")
     
     print("big input")
     array = get_accident_input()
     x = array[:, :13]
     x = (x / x.max(axis=0)).tolist()
-    tx = x[:len(array) * 9 / 10].tolist()
+    tx = x[:len(array) * 9 / 10]
     ty = array[:len(array) * 9 / 10, 13].tolist()
-    vx = x[len(array) * 9 / 10:].tolist()
+    vx = x[len(array) * 9 / 10:]
     vy = array[len(array) * 9 / 10:, 13].tolist()
     decisionTree(tx, ty, vx, vy, 100, "normalized_accident")
     kNN_fast(tx, ty, vx, vy, 100, "normalized_accident")
