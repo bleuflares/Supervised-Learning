@@ -268,7 +268,3 @@ if __name__ == "__main__":
     kNN_fast(tx, ty, vx, vy, 100, "normalized_accident")
     SVM("normalized_accident")
     AdaBoosting_depth(tx, ty, vx, vy, 80, 100, "normalized_accident")
-    NeuralNet_neuron_depth(tx, ty, vx, vy, 20, 50, "normalized_accident")
-
-    
-    
