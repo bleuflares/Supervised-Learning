@@ -205,7 +205,7 @@ if __name__ == "__main__":
     print("small input")
     array = get_admission_input()
     x = array[:, :8]
-    x = x.tolist()
+    x = (x / x.max(axis=0)).tolist()
     y = array[:, 8].tolist()
     y = discrete_convert(y)
     for i in range(10):
@@ -224,9 +224,10 @@ if __name__ == "__main__":
     for i in range(19):
         input_len = (i + 1) * len(array) / 20
         print(input_len)
-        tx = array[:input_len, :13].tolist()
+        x = (x / x.max(axis=0)).tolist()
+        tx = x[:input_len, :13]
         ty = array[:input_len, 13].tolist()
-        vx = array[9500:, :13].tolist()
+        vx = x[9500:, :13]
         vy = array[9500:, 13].tolist()
         decisionTree(tx, ty, vx, vy, 6, "timeline_acc")
         kNN_fast(tx, ty, vx, vy, 20, "timeline_acc")
