@@ -201,19 +201,37 @@ def SVM(data):
     file.write(result)
 
 if __name__ == "__main__":
+    """
+    print("small input")
+    array = get_admission_input()
+    x = array[:, :8]
+    x = x.tolist()
+    y = array[:, 8].tolist()
+    y = discrete_convert(y)
+    for i in range(10):
+        tx = x[:50 * (i + 1)]
+        ty = y[:50 * (i + 1)]
+        vx = x[450:]
+        vy = y[450:]
+        decisionTree(tx, ty, vx, vy, 4, "timeline_adm")
+        kNN_fast(tx, ty, vx, vy, 30, "timeline_adm")
+        SVM("timeline_adm")
+        AdaBoosting(tx, ty, vx, vy, 10, 6, "timeline_adm")
+        NeuralNet(tx, ty, vx, vy, 10, 6, "timeline_adm")
+    """
     print("big input")
     array = get_accident_input()
-    for i in range(20):
+    for i in range(19):
         input_len = (i + 1) * len(array) / 20
         print(input_len)
         tx = array[:input_len * 9 / 10, :13].tolist()
         ty = array[:input_len * 9 / 10, 13].tolist()
-        vx = array[input_len * 9 / 10:input_len, :13].tolist()
-        vy = array[input_len * 9 / 10:input_len, 13].tolist()
-        decisionTree(tx, ty, vx, vy, 6, "timeline")
-        kNN_fast(tx, ty, vx, vy, 20, "timeline")
-        SVM("timeline")
-        AdaBoosting(tx, ty, vx, vy, 10, 20, "timeline")
-        NeuralNet(tx, ty, vx, vy, 23, 15, "timeline")
+        vx = array[9500:input_len, :13].tolist()
+        vy = array[9500:input_len, 13].tolist()
+        decisionTree(tx, ty, vx, vy, 6, "timeline_acc")
+        kNN_fast(tx, ty, vx, vy, 20, "timeline_acc")
+        SVM("timeline_acc")
+        AdaBoosting(tx, ty, vx, vy, 10, 20, "timeline_acc")
+        NeuralNet(tx, ty, vx, vy, 9, 15, "timeline_acc")
     
     
