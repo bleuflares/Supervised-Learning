@@ -224,10 +224,10 @@ if __name__ == "__main__":
     for i in range(19):
         input_len = (i + 1) * len(array) / 20
         print(input_len)
-        tx = array[:input_len * 9 / 10, :13].tolist()
-        ty = array[:input_len * 9 / 10, 13].tolist()
-        vx = array[9500:input_len, :13].tolist()
-        vy = array[9500:input_len, 13].tolist()
+        tx = array[:input_len, :13].tolist()
+        ty = array[:input_len, 13].tolist()
+        vx = array[9500:, :13].tolist()
+        vy = array[9500:, 13].tolist()
         decisionTree(tx, ty, vx, vy, 6, "timeline_acc")
         kNN_fast(tx, ty, vx, vy, 20, "timeline_acc")
         SVM("timeline_acc")
