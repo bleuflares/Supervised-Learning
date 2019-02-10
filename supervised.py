@@ -9,8 +9,6 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn import svm
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
-from sklearn.neighbors import KNeighborsClassifier
-
 
 fold = 10
 
@@ -21,8 +19,7 @@ def euc_dist(arr1, arr2):
 def cos_dist(arr1, arr2):
     length1 = float(np.sum(np.dot(np.array(arr1), np.array(arr1))))
     length2 = float(np.sum(np.dot(np.array(arr2), np.array(arr2))))
-    return np.sum(np.dot(np.array(arr1), np.array(arr2))) / (length1 * length2)
-    
+    return np.sum(np.dot(np.array(arr1), np.array(arr2))) / (length1 * length2)    
 
 def get_admission_input():
     file = open("dataset/Admission_Predict_Ver1.1.csv", 'r')
@@ -193,20 +190,6 @@ def kNN(tx, ty, vx, vy, k_max, data):
         result = str(k_iter + 1) + "," + str(counts / float(len(vx))) + "\n"
         file.write(result)
 
-def kNN_fast(tx, ty, vx, vy, k_max, data):
-    print("kNN")
-    file = open(data + "knn.csv", "w")
-    file.write("k" + ", " + "cross_val_score" + ", " + "training_score" + ", " + "testing_score\n")
-    for k in range(k_max):
-        classifier = KNeighborsClassifier(n_neighbors = k + 1)
-        result = ""
-        result += (str(k + 1) + "," + str(cross_val_score(
-        classifier, tx, ty, cv = fold).mean()) + ", ")
-        classifier.fit(tx, ty)
-        result += str(classifier.score(tx, ty)) + ", "
-        result += str(classifier.score(vx, vy)) + "\n"
-        file.write(result)
-
 def SVM(data):
     print("SVM")
     file = open(data + "svm.csv", "w")
@@ -243,19 +226,21 @@ if __name__ == "__main__":
     print("small input")
     array = get_admission_input()
     x = array[:, :8]
-    x = x.tolist()
+    x = (x / x.max(axis=0)).tolist()
     y = array[:, 8].tolist()
     y = discrete_convert(y)
     tx = x[:450]
     ty = y[:450]
     vx = x[450:]
     vy = y[450:]
-    #decisionTree(tx, ty, vx, vy, 25, "non_normalized_admission")
-    #AdaBoosting_depth(tx, ty, vx, vy, 10, 25, "non_normalized_admission")
-    kNN_fast(tx, ty, vx, vy, 50, "non_normalized_admission")
-    #SVM("non_normalized_admission")
-    #NeuralNet_depth(tx, ty, vx, vy, 10, 25, "non_normalized_admission")
-    """
+    decisionTree(tx, ty, vx, vy, 50, "non_normalized_admission")
+    AdaBoosting_estimator(tx, ty, vx, vy, 50, 10, "non_normalized_admission")
+    AdaBoosting_depth(tx, ty, vx, vy, 10, 50, "non_normalized_admission")
+    kNN(tx, ty, vx, vy, 50, "non_normalized_admission")
+    SVM("non_normalized_admission")
+    NeuralNet_neuron_num(tx, ty, vx, vy, 50, "non_normalized_admission")
+    NeuralNet_depth(tx, ty, vx, vy, 10, 50, "non_normalized_admission")
+    
     print("big input")
     array = get_accident_input()
     x = array[:, :13]
@@ -264,8 +249,11 @@ if __name__ == "__main__":
     ty = array[:len(array) * 9 / 10, 13].tolist()
     vx = x[len(array) * 9 / 10:]
     vy = array[len(array) * 9 / 10:, 13].tolist()
-    decisionTree(tx, ty, vx, vy, 100, "normalized_accident")
-    kNN_fast(tx, ty, vx, vy, 100, "normalized_accident")
+    decisionTree(tx, ty, vx, vy, 100, "normalized_accident_TRIAL")
+    AdaBoosting_estimator(tx, ty, vx, vy, 50, 10, "non_normalized_admission")
+    AdaBoosting_depth(tx, ty, vx, vy, 10, 50, "non_normalized_admission")
+    kNN(tx, ty, vx, vy, 100, "normalized_accident")
     SVM("normalized_accident")
-    AdaBoosting_depth(tx, ty, vx, vy, 80, 100, "normalized_accident")
-    """
+    NeuralNet_neuron_num(tx, ty, vx, vy, 50, "non_normalized_admission")
+    NeuralNet_depth(tx, ty, vx, vy, 9, 50, "non_normalized_admission")
+    
